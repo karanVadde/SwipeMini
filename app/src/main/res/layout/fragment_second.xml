@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SecondFragment">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+      android:layout_marginTop="172dp"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:padding="16dp">
+
+    <Spinner
+        android:id="@+id/prod_type_spinner"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <EditText
+        android:inputType="text"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/prod_type_spinner"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:maxLines="1"
+        android:id="@+id/prd_nme_et"
+        android:gravity="start"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:minWidth="240dp"
+        android:hint="@string/prd_nme_et"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:inputType="numberDecimal"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/prd_nme_et"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:maxLines="1"
+        android:id="@+id/prd_prc_et"
+        android:gravity="start"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:minWidth="240dp"
+        android:hint="@string/ent_prd_prc"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:inputType="numberDecimal"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/prd_prc_et"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:maxLines="1"
+        android:id="@+id/prd_tax_et"
+        android:gravity="start"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:minWidth="240dp"
+        android:hint="@string/ent_prd_tax"
+        android:layout_height="wrap_content"/>
+
+    <EditText
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toBottomOf="@id/prd_tax_et"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:maxLines="1"
+        android:id="@+id/prd_img_lk"
+        android:gravity="start"
+        android:layout_gravity="center_horizontal"
+        android:layout_width="wrap_content"
+        android:minWidth="240dp"
+        android:hint="@string/ent_img_lnk"
+        android:layout_height="wrap_content"/>
+
+    <Button
+        android:layout_marginTop="20dp"
+        android:id="@+id/add_prod_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/add_prod"
+        app:layout_constraintTop_toBottomOf="@id/prd_img_lk"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.core.widget.NestedScrollView>
