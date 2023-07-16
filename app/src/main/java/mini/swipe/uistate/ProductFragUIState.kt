@@ -3,7 +3,7 @@ package mini.swipe.uistate
 import mini.swipe.model.SwipeData
 import mini.swipe.model.SwipeDataItem
 
-data class FirstFragUIState(
+data class ProductFragUIState(
                             //error params
                             val isError: Boolean = false,
                             val errorMsg : String = "",

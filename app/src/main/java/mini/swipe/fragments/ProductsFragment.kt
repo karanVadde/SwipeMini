@@ -1,4 +1,4 @@
-package mini.swipe
+package mini.swipe.fragments
 
 import android.os.Bundle
 import android.util.Log
@@ -8,27 +8,27 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.coroutines.launch
+import mini.swipe.viewmodel.DefaultViewModel
+import mini.swipe.R
 import mini.swipe.adapter.ProductsAdapter
 import mini.swipe.databinding.FragmentFirstBinding
 import mini.swipe.model.SwipeData
 import mini.swipe.model.SwipeDataItem
-import mini.swipe.uistate.FirstFragUIState
+import mini.swipe.uistate.ProductFragUIState
 
 
 /**
  * A simple [Fragment] subclass as the default destination in the navigation.
  */
-class FirstFragment : Fragment() {
+class ProductsFragment : Fragment() {
 
-    private val TAG : String = FirstFragment::class.java.name
+    private val TAG : String = ProductsFragment::class.java.name
 
     private val viewModel : DefaultViewModel by activityViewModels()
 
@@ -63,8 +63,10 @@ class FirstFragment : Fragment() {
         }
     }
 
-
-    private fun handleUIState(firstFragState : FirstFragUIState){
+    /**
+     * handle the fragments ui state using this method.
+     */
+    private fun handleUIState(firstFragState : ProductFragUIState){
         //if data has been loaded successfully, display it.
         if(firstFragState.isDataLoaded && !firstFragState.toDisplaySearchResult){
             displayData(state = firstFragState)
@@ -85,7 +87,10 @@ class FirstFragment : Fragment() {
         }
     }
 
-    private fun displayData(state : FirstFragUIState){
+    /**
+     * use this function to display the data once its downloaded.
+     */
+    private fun displayData(state : ProductFragUIState){
         //setup recycler view here.
         state.swipeData?.let {
             handleLoadingBar(isVisible = false)
@@ -95,7 +100,10 @@ class FirstFragment : Fragment() {
         viewModel.onDisplayData()
     }
 
-    private fun handleSearch(state : FirstFragUIState){
+    /**
+     * when a user searches for an item, use this function to see if we have a match.
+     */
+    private fun handleSearch(state : ProductFragUIState){
         val newList = ArrayList<SwipeDataItem>()
         //wrap the search result in an array list.
         state.searchResult?.let { newList.add(it) }
@@ -107,7 +115,10 @@ class FirstFragment : Fragment() {
         viewModel.onSearchDisplay()
     }
 
-    private fun handleSearchClear(state : FirstFragUIState){
+    /**
+     * use this function to reload the item list, when a user clears the search.
+     */
+    private fun handleSearchClear(state : ProductFragUIState){
         //if the current fragment is visible.
         if(isVisible){
             //a non null search result has occurred, we will display the first found item in the array list.
@@ -119,7 +130,10 @@ class FirstFragment : Fragment() {
         }
     }
 
-    private fun handleError(state : FirstFragUIState){
+    /**
+     * handle any error using this method.
+     */
+    private fun handleError(state : ProductFragUIState){
         Log.d(TAG, "handleUIState/handleError: $state")
         handleLoadingBar(isVisible = false)
         //display a toast or snack-bar.

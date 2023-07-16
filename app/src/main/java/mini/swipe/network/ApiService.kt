@@ -7,16 +7,14 @@ import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
+import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.adapter.rxjava2.RxJava2CallAdapterFactory
 import retrofit2.converter.gson.GsonConverterFactory
-import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
-import retrofit2.http.PartMap
-import retrofit2.http.Query
 
 const val BASE_URL = "https://app.getswipe.in/api/public/"
 
@@ -39,12 +37,11 @@ interface ApiService {
 
     @Multipart
     @POST("add")
-    fun postData(@Query("product_name") type: String,
-                 @Query("product_type") format: String,
-                 @Query("price") price: String,
-                 @Query("tax") tax: String,
-                 @Query("files[]") files: String
-    ) : Observable<PostResponse>
+    fun postData(@Part("product_name")  prodName : RequestBody,
+                     @Part("product_type")  prodType : RequestBody,
+                     @Part("price")  price : RequestBody,
+                     @Part("tax")  tax : RequestBody
+    ) : Call<PostResponse>
 }
 
 object ApiInstance{

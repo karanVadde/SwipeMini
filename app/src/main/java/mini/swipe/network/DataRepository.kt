@@ -5,14 +5,18 @@ import io.reactivex.Observable
 import mini.swipe.model.PostResponse
 import mini.swipe.model.SwipeData
 import mini.swipe.model.SwipeDataItem
-import mini.swipe.uistate.SecondFragUIState
+import mini.swipe.uistate.NewProduct
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.RequestBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 sealed interface DataRepository {
     fun getSwipeData():Observable<SwipeData>
     fun findProduct(searchText:String):SwipeDataItem?
-    fun performPostFun(secondFragUIState: SecondFragUIState):Observable<PostResponse>?
+    fun addNewProduct(newProduct: NewProduct):Call<PostResponse>?
 }
 
 class DataRepositoryImpl : DataRepository {
@@ -21,18 +25,24 @@ class DataRepositoryImpl : DataRepository {
 
     private val _products = arrayListOf<SwipeDataItem>()
 
+    /**
+     * use this function to get app data.
+     */
     override fun getSwipeData(): Observable<SwipeData> {
         return ApiInstance.apiInstance.getData().doOnNext { swipeData ->
-            Log.i(javaClass.simpleName, swipeData.toString())
+            Log.i(TAG, swipeData.toString())
             //add to product list for search function.
             swipeData.forEach {
                 _products.add(it)
             }
         }.doOnError {
-            Log.e(javaClass.simpleName, it.toString())
+            Log.e(TAG, it.toString())
         }
     }
 
+    /**
+     * use this method to find a product when user enters text in the search bar.
+     */
     override fun findProduct(searchText:String): SwipeDataItem? {
         val dataItem = _products.find {
             Log.d(TAG, "${it.product_name.lowercase()} ${searchText.lowercase()}")
@@ -43,17 +53,15 @@ class DataRepositoryImpl : DataRepository {
         return dataItem
     }
 
-    override fun performPostFun(secondFragUIState: SecondFragUIState): Observable<PostResponse>? {
-        Log.d(TAG, "performPostFun/secondFragUIState: $secondFragUIState")
-        return ApiInstance.apiInstance.postData(secondFragUIState.prodName?:"",
-            secondFragUIState.prodType?:"",
-            secondFragUIState.prodPrice?:"",
-            secondFragUIState.prodTax?:"",
-            secondFragUIState.file?:"").doOnNext { postResp ->
-            Log.i(TAG, postResp.toString())
-        }.doOnError {
-            Log.e(TAG, it.toString())
-        }
+    /**
+     * use this method to add a new product.
+     */
+    override fun addNewProduct(newProduct: NewProduct): Call<PostResponse>? {
+        Log.d(TAG, "addNewProduct: $newProduct")
+        return ApiInstance.apiInstance.postData(newProduct.prodName!!,
+            newProduct.prodType!!,
+            newProduct.prodPrice!!,
+            newProduct.prodTax!!)
     }
 
 }

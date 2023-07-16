@@ -1,6 +1,8 @@
-package mini.swipe
+package mini.swipe.viewmodel
 
+import android.content.Intent
 import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import io.reactivex.android.schedulers.AndroidSchedulers
@@ -12,11 +14,17 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import mini.swipe.model.PostResponse
 import mini.swipe.model.SwipeData
 import mini.swipe.network.DataRepository
 import mini.swipe.network.DataRepositoryImpl
-import mini.swipe.uistate.FirstFragUIState
-import mini.swipe.uistate.SecondFragUIState
+import mini.swipe.uistate.ProductFragUIState
+import mini.swipe.uistate.MainActivityUIState
+import mini.swipe.uistate.AddNewProdUIState
+import mini.swipe.uistate.NewProduct
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 
 class DefaultViewModel : ViewModel() {
@@ -25,30 +33,82 @@ class DefaultViewModel : ViewModel() {
 
     private var dataRepository : DataRepository = DataRepositoryImpl()
     //state variables.
-    private val _uiState : MutableStateFlow<FirstFragUIState>
-            = MutableStateFlow(FirstFragUIState())
-    var uiState: StateFlow<FirstFragUIState> = _uiState.asStateFlow()
+    private val _uiState : MutableStateFlow<ProductFragUIState>
+            = MutableStateFlow(ProductFragUIState())
+    var uiState: StateFlow<ProductFragUIState> = _uiState.asStateFlow()
+
+    //keep a reference of app data.
+    private var masterSwipeData : SwipeData ?= null
+    //use this field to populate product type in the second fragment.
+    var uniqueProdSet = HashSet<String>()
+    //use this field to show or hide the search edit text.
+    val hideSearchEt = MutableLiveData<Boolean>()
 
     init {
+        //load app data.
         loadData()
     }
 
-    fun performPostFun(secFragUIState : SecondFragUIState){
-        dataRepository.performPostFun(secFragUIState)
+    /**
+     * a callback to keep track of whether the product addition was successful or not.
+     */
+    private val callBack = object : Callback<PostResponse?> {
+        override fun onResponse(
+            call: Call<PostResponse?>,
+            response: Response<PostResponse?>
+        ) {
+            Log.d(TAG, "onResponse : $response")
+            _addNewProdUiState.update {
+                it.copy(displayProgressBar = false,
+                    prodAddSuccess = true)
+            }
+        }
+
+        override fun onFailure(call: Call<PostResponse?>, t: Throwable) {
+            Log.d(TAG, "onFailure : ${t.printStackTrace()}")
+            _addNewProdUiState.update {
+                it.copy(displayProgressBar = false,
+                    prodAddSuccess = false)
+            }
+        }
+    }
+    /**
+     * use this function to add a new product.
+     */
+    fun addNewProduct(newProduct : NewProduct){
+        Log.d(TAG, "addNewProduct: $newProduct")
+        try{
+            dataRepository.addNewProduct(newProduct)?.enqueue(callBack)
+        }catch (e : java.lang.Exception){
+            e.printStackTrace()
+        }
     }
 
+    /**
+     * use this function to load data.
+     */
     private fun loadData(){
         viewModelScope.launch(Dispatchers.IO) {
             getSwipeData()
         }
     }
 
+    /**
+     * what should happen when a user navigates from second frag to first fragment.
+     */
     fun onSecFragToFirst(){
+        //reload data.
         loadData()
+        //inform main activity to show the search bar
+        hideSearchEt.postValue(false)
     }
 
+    /**
+     * what should happen when a user navigates from first to second screen.
+     */
     fun onFirstFragToSec(){
-
+        //inform main activity to hide the search bar.
+        hideSearchEt.postValue(true)
     }
 
     /**
@@ -65,13 +125,54 @@ class DefaultViewModel : ViewModel() {
         }
     }
 
-
-    private var masterSwipeData : SwipeData ?= null
-
-    var uniqueProdSet = HashSet<String>()
+    /**
+     * use this function to keep track of the unique product types in AddProductFragment
+     */
     private fun uniqueProdType(swipeData: SwipeData){
         swipeData.forEach {
             uniqueProdSet.add(it.product_type)
+        }
+    }
+
+    /**
+     * keep track of activity ui state using these fields.
+     */
+    private val _mainUiState : MutableStateFlow<MainActivityUIState>
+            = MutableStateFlow(MainActivityUIState())
+    var mainUiState: StateFlow<MainActivityUIState> = _mainUiState.asStateFlow()
+
+    /**
+     * notify main activity that user wants to add an image.
+     */
+    fun addImage(){
+        Log.d(TAG, "addImage")
+        _mainUiState.update{
+            it.copy(toAddImage = true)
+        }
+    }
+
+    /**
+     * keep track of add new product frag state using these fields.
+     */
+    private val _addNewProdUiState : MutableStateFlow<AddNewProdUIState>
+            = MutableStateFlow(AddNewProdUIState())
+    var addNewProdUiState: StateFlow<AddNewProdUIState> = _addNewProdUiState.asStateFlow()
+    fun onAddImageFinish(data: Intent?){
+        Log.d(TAG, "onAddImageFinish")
+        //also inform second frag to update button text.
+        _addNewProdUiState.update {
+            it.copy(updateImgBtnTxt = data?.data.toString(),
+                toUpdateImgBtn = true)
+        }
+    }
+
+    /**
+     * what happens after an image is loaded into the view.
+     */
+    fun onAddImgFinish(){
+        Log.d(TAG, "onAddImgFinish")
+        _mainUiState.update{
+            it.copy(toAddImage = false)
         }
     }
 
@@ -136,6 +237,9 @@ class DefaultViewModel : ViewModel() {
         }
     }
 
+    /**
+     * what happens when a text is entered or cleared in the search et box in the products screen
+     */
     fun onTextChanged(prodToSearch : String):String{
         //the user has entered the above text in the search bar.
         //check if there is a product that matches the text.

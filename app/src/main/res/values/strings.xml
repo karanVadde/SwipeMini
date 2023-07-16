@@ -52,6 +52,6 @@
     <string name="prd_nme_et">2. Enter Product Name</string>
     <string name="ent_prd_prc">3. Enter Product Price</string>
     <string name="ent_prd_tax">4. Enter Product Tax</string>
-    <string name="ent_img_lnk">5. Enter Image Link</string>
+    <string name="ent_img_lnk">5. Add Image (Optional)</string>
     <string name="add_prod">Add Product</string>
 </resources>

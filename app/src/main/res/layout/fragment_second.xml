@@ -4,13 +4,25 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SecondFragment">
+    tools:context=".fragments.AddNewProductFragment">
 
   <androidx.constraintlayout.widget.ConstraintLayout
       android:layout_marginTop="172dp"
       android:layout_width="match_parent"
       android:layout_height="match_parent"
       android:padding="16dp">
+
+    <androidx.core.widget.ContentLoadingProgressBar
+        android:visibility="invisible"
+        android:id="@+id/loading_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginTop="0dp"/>
 
     <Spinner
         android:id="@+id/prod_type_spinner"
@@ -65,19 +77,15 @@
         android:hint="@string/ent_prd_tax"
         android:layout_height="wrap_content"/>
 
-    <EditText
+    <androidx.appcompat.widget.AppCompatImageButton
         android:layout_marginTop="20dp"
+        android:id="@+id/prd_img_btn"
+        android:layout_width="180dp"
+        android:layout_height="180dp"
+        app:srcCompat="@drawable/ic_launcher_foreground"
         app:layout_constraintTop_toBottomOf="@id/prd_tax_et"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:maxLines="1"
-        android:id="@+id/prd_img_lk"
-        android:gravity="start"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="wrap_content"
-        android:minWidth="240dp"
-        android:hint="@string/ent_img_lnk"
-        android:layout_height="wrap_content"/>
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:layout_marginTop="20dp"
@@ -85,7 +93,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="@string/add_prod"
-        app:layout_constraintTop_toBottomOf="@id/prd_img_lk"
+        app:layout_constraintTop_toBottomOf="@id/prd_img_btn"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
